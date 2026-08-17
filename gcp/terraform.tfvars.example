@@ -1,0 +1,6 @@
+project_id    = "meu-projeto-gcp"
+region        = "us-central1"
+zone          = "us-central1-a"
+instance_name = "cloud-reliability-vm"
+machine_type  = "e2-micro"
+bucket_name   = "" # deixe vazio para gerar nome único automaticamente

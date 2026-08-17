@@ -1,0 +1,8 @@
+location             = "East US"
+resource_group_name  = "cloud-reliability-rg"
+instance_name         = "cloud-reliability-vm"
+vm_size               = "Standard_B1s"
+admin_username        = "azureadmin"
+# NUNCA cometa a chave real no repositório. Use uma variável de ambiente
+# TF_VAR_ssh_public_key ou um arquivo terraform.tfvars não versionado.
+ssh_public_key        = "ssh-rsa AAAA...seu-conteudo-aqui..."

@@ -1,14 +1,12 @@
-#Multi-Cloud Terraform IaC — AWS · Azure · GCP
+# 🌐 Multi-Cloud Terraform IaC — AWS · Azure · GCP
 
--Infraestrutura como Código (IaC) modular para provisionar recursos básicos e comparáveis em **três provedores de nuvem simultaneamente**, 
--Usando Terraform 
--Estrutura de repositório padronizada.
+Infraestrutura como Código (IaC) modular para provisionar recursos básicos e comparáveis em **três provedores de nuvem simultaneamente**, usando um único framework de ferramentas (Terraform) e uma estrutura de repositório padronizada.
 
 Projeto criado como estudo prático de **Cloud Reliability Engineering** e como referência para comparação de custos, tempo de provisionamento e padrões de rede/computação/armazenamento entre AWS, Azure e Google Cloud.
 
 ---
 
-##Objetivo
+## 🎯 Objetivo
 
 - Demonstrar provisionamento **multi-cloud** com o mesmo conjunto mínimo de recursos (rede, instância de computação, storage) em cada provedor.
 - Servir como template reutilizável e didático para quem está aprendendo Terraform, DevOps e Cloud Reliability.
@@ -17,7 +15,7 @@ Projeto criado como estudo prático de **Cloud Reliability Engineering** e como 
 
 ---
 
-##Pré-requisitos
+## 📋 Pré-requisitos
 
 | Ferramenta | Versão mínima | Observação |
 |---|---|---|
@@ -27,11 +25,11 @@ Projeto criado como estudo prático de **Cloud Reliability Engineering** e como 
 | [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (`gcloud`) | mais recente | Autenticação GCP |
 | Contas ativas | — | Uma conta/assinatura/projeto em cada provedor, com permissões para criar VPC, VM/instância e storage |
 
-Você não precisa provisionar os três provedores ao mesmo tempo — cada diretório (`aws/`, `azure/`, `gcp/`) é independente e pode ser executado isoladamente.
+> 💡 Você não precisa provisionar os três provedores ao mesmo tempo — cada diretório (`aws/`, `azure/`, `gcp/`) é independente e pode ser executado isoladamente.
 
 ---
 
-##Estrutura de diretórios
+## 📁 Estrutura de diretórios
 
 ```
 multicloud-terraform-iac/
@@ -59,20 +57,20 @@ multicloud-terraform-iac/
 
 ---
 
-##Diagrama de arquitetura
+## 🏗️ Diagrama de arquitetura
 
 Cada provedor segue o mesmo padrão: **rede isolada → instância de computação exposta publicamente → bucket de storage privado**.
 
 ```mermaid
 flowchart TB
-    subgraph AWS["AWS — us-east-1"]
+    subgraph AWS["☁️ AWS — us-east-1"]
         direction TB
         A_VPC["VPC 10.0.0.0/16"] --> A_SUB["Subnet pública 10.0.1.0/24"]
         A_SUB --> A_EC2["EC2 t3.micro"]
         A_S3["S3 Bucket\n(privado, SSE-AES256)"]
     end
 
-    subgraph AZURE["Azure — East US"]
+    subgraph AZURE["☁️ Azure — East US"]
         direction TB
         Z_RG["Resource Group"] --> Z_VNET["VNet 10.1.0.0/16"]
         Z_VNET --> Z_SUB["Subnet 10.1.1.0/24"]
@@ -80,27 +78,27 @@ flowchart TB
         Z_SA["Storage Account\n+ Blob Container"]
     end
 
-    subgraph GCP["GCP — us-central1"]
+    subgraph GCP["☁️ GCP — us-central1"]
         direction TB
         G_VPC["VPC (custom)"] --> G_SUB["Subnet 10.2.1.0/24"]
         G_SUB --> G_CE["Compute Engine e2-micro"]
         G_GCS["Cloud Storage Bucket\n(versionado, uniform access)"]
     end
 
-    Internet(("Internet")) --> A_EC2
+    Internet(("🌐 Internet")) --> A_EC2
     Internet --> Z_VM
     Internet --> G_CE
 ```
 
 ---
 
-## Processo de execução
+## 🚀 Step-by-step de execução
 
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/<seu-usuario>/multicloud-infrastructure-terraform.git
-cd multicloud-infrastructure-terraform
+git clone https://github.com/<seu-usuario>/multicloud-terraform-iac.git
+cd multicloud-terraform-iac
 ```
 
 ### 2. Configurar credenciais de cada provedor
@@ -129,7 +127,7 @@ cp terraform.tfvars.example terraform.tfvars
 # Edite terraform.tfvars com seus valores (nome da instância, região, tamanho etc.)
 ```
 
-No caso do Azure, defina `ssh_public_key` com sua chave pública real (ex.: `cat ~/.ssh/id_rsa.pub`). Nunca versione essa chave — o `.gitignore` já ignora `*.tfvars`.
+> ⚠️ No caso do Azure, defina `ssh_public_key` com sua chave pública real (ex.: `cat ~/.ssh/id_rsa.pub`). Nunca versione essa chave — o `.gitignore` já ignora `*.tfvars`.
 
 ### 4. Inicializar o Terraform
 
@@ -159,7 +157,7 @@ terraform destroy -var-file="terraform.tfvars"
 
 ---
 
-##Exemplos de saída (outputs)
+## 📤 Exemplos de saída (outputs)
 
 Após `terraform apply`, cada provedor exibe outputs semelhantes a:
 
@@ -192,7 +190,7 @@ storage_bucket_url    = "gs://cloud-reliability-9f3a2b1c"
 
 ---
 
-##Boas práticas de segurança adotadas
+## 🔒 Boas práticas de segurança adotadas
 
 - **Segredos fora do controle de versão**: arquivos `*.tfvars` reais são ignorados pelo `.gitignore`; apenas `*.tfvars.example` (sem valores sensíveis) é versionado.
 - **Variáveis sensíveis marcadas** (`sensitive = true`), como `ssh_public_key` no Azure, para evitar exposição em logs de `plan`/`apply`.
@@ -204,9 +202,9 @@ storage_bucket_url    = "gs://cloud-reliability-9f3a2b1c"
 
 ---
 
-##Extras (destaques para publicação)
+## ⭐ Extras (destaques para publicação)
 
-###Comparação de custos estimados (uso básico, ~730h/mês)
+### 💰 Comparação de custos estimados (uso básico, ~730h/mês)
 
 | Recurso | AWS | Azure | GCP |
 |---|---|---|---|
@@ -215,7 +213,7 @@ storage_bucket_url    = "gs://cloud-reliability-9f3a2b1c"
 | Rede/IP público | Incluso (IP dinâmico) | ~US$ 3,65/mês (IP estático Standard SKU) | Incluso (IP efêmero) |
 | **Total aproximado** | **~US$ 7,73/mês** | **~US$ 11,43/mês** | **~US$ 6,30/mês** |
 
-Valores ilustrativos e sujeitos a mudança conforme região, promoções e free tier vigente. Consulte as calculadoras oficiais ([AWS](https://calculator.aws/), [Azure](https://azure.microsoft.com/pricing/calculator/), [GCP](https://cloud.google.com/products/calculator)) para valores atualizados.
+> 📌 Valores ilustrativos e sujeitos a mudança conforme região, promoções e free tier vigente. Consulte as calculadoras oficiais ([AWS](https://calculator.aws/), [Azure](https://azure.microsoft.com/pricing/calculator/), [GCP](https://cloud.google.com/products/calculator)) para valores atualizados.
 
 ### ⏱️ Benchmark de tempo de provisionamento (referência)
 
@@ -227,7 +225,7 @@ Valores ilustrativos e sujeitos a mudança conforme região, promoções e free 
 
 > Tempos variam conforme região, carga da conta e latência de rede. Recomenda-se medir com `time terraform apply` no seu próprio ambiente para benchmarks reais.
 
-###Pipeline CI/CD (opcional)
+### 🔁 Pipeline CI/CD (opcional)
 
 O workflow em [`.github/workflows/terraform.yml`](.github/workflows/terraform.yml) executa, em matriz para os três provedores:
 
@@ -240,7 +238,7 @@ O workflow em [`.github/workflows/terraform.yml`](.github/workflows/terraform.ym
 Configure os *secrets* do repositório antes de habilitar o apply automático:
 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_SUBSCRIPTION_ID`, `ARM_TENANT_ID`, `GOOGLE_CREDENTIALS`.
 
-###Demonstração em vídeo
+### 🎥 Demonstração em vídeo
 
 > Espaço reservado para o link do vídeo de demonstração do provisionamento (ex.: gravação de tela do `terraform apply` em cada nuvem, seguido do `terraform destroy`). Recomenda-se um vídeo curto (2–4 min) ideal para acompanhar o post no LinkedIn.
 >
@@ -248,7 +246,7 @@ Configure os *secrets* do repositório antes de habilitar o apply automático:
 
 ---
 
-##Limpeza de recursos
+## 🧹 Limpeza de recursos
 
 Sempre execute `terraform destroy` ao final dos testes para evitar cobranças inesperadas nas três nuvens:
 
